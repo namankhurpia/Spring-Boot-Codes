@@ -1,5 +1,6 @@
 package com.namankhurpia.firstapp.firstapp.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,8 +8,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.namankhurpia.firstapp.firstapp.LoginService;
+
 @Controller
 public class LoginController {
+	
+	@Autowired
+	LoginService service;
 	
 	@RequestMapping(value="/login", method = RequestMethod.GET)
 	public String returnloginmsg(ModelMap model)
@@ -17,10 +23,19 @@ public class LoginController {
 	}
 	
 	@RequestMapping(value="/login",method = RequestMethod.POST )
-	public String showWelcomePage(ModelMap model, @RequestParam String name)
-	{
-		model.put("name",name);
-		return "welcome";
+	public String showWelcomePage(ModelMap model, @RequestParam String name,@RequestParam String password) {
+		boolean isvalid = service.validateUser(name, password);
+		if(isvalid)
+			{
+			model.put("name",name);
+			return "welcome";
+			}
+		else
+		{
+			model.put("errorMessage","Invalid");
+			return "login";
+		}
+		
 	}
 
 }
